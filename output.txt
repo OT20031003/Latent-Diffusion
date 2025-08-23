@@ -1,0 +1,21 @@
+Loading model from models/ldm/text2img-large/model.ckpt
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+making attention of type 'vanilla' with 512 in_channels
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+Data shape for DDIM sampling is (4, 4, 32, 32), eta 0.0
+Running DDIM Sampling with 200 timesteps
+samples_ddim = torch.Size([4, 4, 32, 32])
+Data shape for DDIM sampling is (4, 4, 32, 32), eta 0.0
+Running DDIM Sampling with 200 timesteps
+samples_ddim = torch.Size([4, 4, 32, 32])
+Data shape for DDIM sampling is (4, 4, 32, 32), eta 0.0
+Running DDIM Sampling with 200 timesteps
+samples_ddim = torch.Size([4, 4, 32, 32])
+Data shape for DDIM sampling is (4, 4, 32, 32), eta 0.0
+Running DDIM Sampling with 200 timesteps
+samples_ddim = torch.Size([4, 4, 32, 32])
+Your samples are ready and waiting four you here: 
+outputs/txt2img-samples 
+Enjoy.

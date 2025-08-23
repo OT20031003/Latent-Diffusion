@@ -94,6 +94,7 @@ class VQModel(pl.LightningModule):
             self.model_ema(self)
 
     def encode(self, x):
+        print(f"ldm/models/autoencoder.py, encode")
         h = self.encoder(x)
         h = self.quant_conv(h)
         quant, emb_loss, info = self.quantize(h)
@@ -267,6 +268,7 @@ class VQModelInterface(VQModel):
         self.embed_dim = embed_dim
 
     def encode(self, x):
+        print(f"ldm/models/autoencoder.py, VQModelInterface, encode")
         h = self.encoder(x)
         h = self.quant_conv(h)
         return h
@@ -322,6 +324,7 @@ class AutoencoderKL(pl.LightningModule):
         print(f"Restored from {path}")
 
     def encode(self, x):
+        print(f"ldm/models/autoencoder.py, AutoencoderKL, encode")
         h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)

@@ -105,6 +105,7 @@ if __name__ == "__main__":
 
 
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")  # TODO: Optionally download from same location as ckpt and chnage this logic
+    # ldm.modules.diffusion.ddpmをロード
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")  # TODO: check path
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -132,8 +133,9 @@ if __name__ == "__main__":
             if opt.scale != 1.0:
                 uc = model.get_learned_conditioning(opt.n_samples * [""])
             for n in trange(opt.n_iter, desc="Sampling"):
-                c = model.get_learned_conditioning(opt.n_samples * [prompt])
-                shape = [4, opt.H//8, opt.W//8]
+                #opt.n_iter 回の画像生成バッチ処理を、『Sampling』というラベル付きのプログレスバーで進捗を表示しながら実行
+                c = model.get_learned_conditioning(opt.n_samples * [prompt]) #
+                shape = [4, opt.H//8, opt.W//8] # 潜在空間
                 samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
                                                  conditioning=c,
                                                  batch_size=opt.n_samples,
@@ -142,8 +144,8 @@ if __name__ == "__main__":
                                                  unconditional_guidance_scale=opt.scale,
                                                  unconditional_conditioning=uc,
                                                  eta=opt.ddim_eta)
-
-                x_samples_ddim = model.decode_first_stage(samples_ddim)
+                print(f"samples_ddim = {samples_ddim.shape}")
+                x_samples_ddim = model.decode_first_stage(samples_ddim) 
                 x_samples_ddim = torch.clamp((x_samples_ddim+1.0)/2.0, min=0.0, max=1.0)
 
                 for x_sample in x_samples_ddim:
