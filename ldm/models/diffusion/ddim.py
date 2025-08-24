@@ -141,6 +141,7 @@ class DDIMSampler(object):
             ts = torch.full((b,), step, device=device, dtype=torch.long)
 
             if mask is not None:
+                #impainting用
                 assert x0 is not None
                 img_orig = self.model.q_sample(x0, ts)  # TODO: deterministic forward pass?
                 img = img_orig * mask + (1. - mask) * img
@@ -160,6 +161,100 @@ class DDIMSampler(object):
                 intermediates['pred_x0'].append(pred_x0)
 
         return img, intermediates
+    
+    @torch.no_grad
+    def my_ddim_sampling(self,
+               S, #ddim_num_steps
+               batch_size,
+               shape,
+               noise_sigma,
+               conditioning=None,
+               callback=None,
+               normals_sequence=None,
+               img_callback=None,
+               quantize_x0=False,
+               eta=0.,
+               mask=None,
+               x0=None,
+               temperature=1.,
+               noise_dropout=0.,
+               score_corrector=None,
+               corrector_kwargs=None,
+               verbose=True,
+               x_T=None,
+               log_every_t=100,
+               unconditional_guidance_scale=1.,
+               unconditional_conditioning=None,
+
+               # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
+               **kwargs
+               ):
+        if conditioning is not None:
+            if isinstance(conditioning, dict):
+                cbs = conditioning[list(conditioning.keys())[0]].shape[0]
+                if cbs != batch_size:
+                    print(f"Warning: Got {cbs} conditionings but batch-size is {batch_size}")
+            else:
+                if conditioning.shape[0] != batch_size:
+                    print(f"Warning: Got {conditioning.shape[0]} conditionings but batch-size is {batch_size}")
+
+        self.make_schedule(ddim_num_steps=S, ddim_eta=eta, verbose=verbose)
+        print(f"ddim.py alphas_cumprod = {self.alphas_cumprod}")
+        C, H, W = shape
+        size = (batch_size, C, H, W)
+
+        device = self.model.betas.device
+        alpha_bar_u = 1/(1 + noise_sigma**2)
+        print(f"alpha_bar_u = {alpha_bar_u}")
+        alpha_minus = -self.alphas_cumprod
+        start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)
+        torch.clamp(start_timesteps, 0, S)
+        
+        # alphas
+        #indiceからタイムステップ
+        print(f"start_timesteps = {start_timesteps}")
+        results = []
+        img = x_T.to(device)
+        maxind = start_timesteps.max().item()
+        time_range = reversed(range(0, maxind))
+        iterator = tqdm(time_range, desc='My Sampling')
+        for i, step in enumerate(iterator):
+            # 現在のステップが、バッチ内の各画像の開始タイムステップ以下であるかどうかのマスクを作成
+            # これにより、まだサンプリングが始まっていない画像をスキップできる
+            active_mask = (start_timesteps >= step).view(-1, 1, 1, 1)
+
+            # ts (タイムステップ) はバッチ全体分を用意
+            ts = torch.full((batch_size,), step, device=device, dtype=torch.long)
+            
+            # indexはスケジュール配列を参照するためのもの。現在のループ回数から計算
+            # self.ddim_timestepsはmake_scheduleで作成される長さSの配列
+            # stepに対応するindexを探す
+            time_idx_tensor = torch.where(torch.from_numpy(self.ddim_timesteps).to(device) == step)[0]
+            if time_idx_tensor.numel() == 0:
+                # もし現在のstepがスケジュールになければスキップ (補間なども可能)
+                continue
+            index = time_idx_tensor.item()
+
+
+            # p_sample_ddimをバッチ全体に対して一度だけ呼び出す
+            outs = self.p_sample_ddim(img, conditioning, ts, index, # 修正: indexを追加
+                                    unconditional_guidance_scale=unconditional_guidance_scale,
+                                    unconditional_conditioning=unconditional_conditioning)
+            img_prev, pred_x0 = outs
+
+            # active_maskがTrueの画像だけを、計算結果で更新する
+            img = torch.where(active_mask, img_prev, img)
+
+
+            
+                
+            
+
+
+
+        return img
+
+
 
     @torch.no_grad()
     def p_sample_ddim(self, x, c, t, index, repeat_noise=False, use_original_steps=False, quantize_denoised=False,

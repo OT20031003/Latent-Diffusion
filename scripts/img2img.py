@@ -215,7 +215,7 @@ if __name__ == "__main__":
     z_variances = torch.var(z, dim=(1, 2, 3))
     save_img(z, "outputs/z.png")
     z_copy = z
-    for snr in [60]:
+    for snr in [0,5,10,20, 25, 30]:
         # SNR 15dBのときのノイズを乗せる
         z = z_copy
         snrp = pow(10, snr/10)
@@ -228,9 +228,15 @@ if __name__ == "__main__":
         save_img(recoverd_img_no_samp, f"outputs/nosample_{snr}.png")  
         cond = model.get_learned_conditioning(z.shape[0] * [""])
         print(f"####cond finisihed #####")
-        samples, intermediates = sampler.sample(S=opt.ddim_steps, batch_size=z.shape[0], 
-                        shape= z.shape[1:4],  x_T=z,
+        # samples, intermediates = sampler.sample(S=opt.ddim_steps, batch_size=z.shape[0], 
+        #                 shape= z.shape[1:4],  x_T=z,
+        #                 conditioning=cond)
+        samples = sampler.my_ddim_sampling(S=opt.ddim_steps, batch_size=z.shape[0], 
+                        shape= z.shape[1:4],   noise_sigma=noise_variances,x_T=z,
                         conditioning=cond)
+        
+        
+    
         print(f"d = {samples.shape}")
         recoverd_img = model.decode_first_stage(samples)
         print(f"recoverd_img = {recoverd_img.shape}")
