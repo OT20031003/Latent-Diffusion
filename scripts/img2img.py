@@ -215,7 +215,7 @@ if __name__ == "__main__":
     z_variances = torch.var(z, dim=(1, 2, 3))
     save_img(z, "outputs/z.png")
     z_copy = z
-    for snr in range(0, 160, 5):
+    for snr in range(0, 200, 5):
         # SNR 15dBのときのノイズを乗せる
         snr = snr /10.0
         z = z_copy
