@@ -105,6 +105,7 @@ class ResnetBlock(nn.Module):
                                      stride=1,
                                      padding=1)
         if self.in_channels != self.out_channels:
+            print(f"ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels")
             if self.use_conv_shortcut:
                 self.conv_shortcut = torch.nn.Conv2d(in_channels,
                                                      out_channels,
@@ -378,7 +379,7 @@ class Encoder(nn.Module):
         self.num_res_blocks = num_res_blocks
         self.resolution = resolution
         self.in_channels = in_channels
-
+        print(f"ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = {in_channels}, ch_mult = {ch_mult}")
         # downsampling
         self.conv_in = torch.nn.Conv2d(in_channels,
                                        self.ch,
@@ -434,7 +435,7 @@ class Encoder(nn.Module):
     def forward(self, x):
         # timestep embedding
         temb = None
-
+        print(f"Encoder, forward@@@@@@@@@@@@@@@")
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):

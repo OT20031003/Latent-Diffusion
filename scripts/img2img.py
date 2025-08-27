@@ -13,6 +13,7 @@ from ldm.models.diffusion.plms import PLMSSampler
 from torchvision import utils as vutil
 import os
 import glob # ファイルパスのリストを正規表現で取得するために使用
+import lpips
 
 def load_images_as_tensors(dir_path, image_size=(256, 256)):
     """
@@ -96,6 +97,11 @@ def remove_png(path):
         except OSError as e:
             print(f"Error: {e.strerror} - {e.filename}")
     print(f"remove_png complete")
+
+def caluc_lpips(x,y):
+    loss_fn = lpips.LPIPS(net='alex')
+    d = loss_fn(x, y)
+    return d.item()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -210,14 +216,14 @@ if __name__ == "__main__":
     img = img.to(device="cuda")
     z = model.encode_first_stage(img)
     # detachはVAEの重みを固定するため
+    print(f"encode start = ")
     z = model.get_first_stage_encoding(z).detach()
     print(f"z = {z.shape}, z_max = {z.max()}, z_min = {z.min()}")
     z_variances = torch.var(z, dim=(1, 2, 3))
     save_img(z, "outputs/z.png")
     z_copy = z
-    for snr in range(0, 200, 5):
+    for snr in range(0, 5, 1):
         # SNR 15dBのときのノイズを乗せる
-        snr = snr /10.0
         z = z_copy
         snrp = pow(10, snr/10)
         noise_variances = z_variances/snrp
@@ -240,6 +246,7 @@ if __name__ == "__main__":
     
         print(f"d = {samples.shape}")
         recoverd_img = model.decode_first_stage(samples)
+        print(f"LPIPS = {recoverd_img, img}")
         print(f"recoverd_img = {recoverd_img.shape}")
         save_img(recoverd_img, f"outputs/output_{snr}.png")
         

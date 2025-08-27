@@ -30,6 +30,7 @@ class VQModel(pl.LightningModule):
                  use_ema=False
                  ):
         super().__init__()
+        print(f"ldm/models/autoencoder.py, VQModel __init__")
         self.embed_dim = embed_dim
         self.n_embed = n_embed
         self.image_key = image_key
@@ -283,7 +284,7 @@ class VQModelInterface(VQModel):
         dec = self.decoder(quant)
         return dec
 
-
+print("autoencoder.py")
 class AutoencoderKL(pl.LightningModule):
     def __init__(self,
                  ddconfig,
@@ -298,6 +299,7 @@ class AutoencoderKL(pl.LightningModule):
         super().__init__()
         self.image_key = image_key
         self.encoder = Encoder(**ddconfig)
+        print(f"ldm/models/autoencoder.py, AutoencoderKL init, created")
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
         assert ddconfig["double_z"]
@@ -324,9 +326,11 @@ class AutoencoderKL(pl.LightningModule):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        print(f"ldm/models/autoencoder.py, AutoencoderKL, encode")
+        #print(f"ldm/models/autoencoder.py, AutoencoderKL, encoder kidou")
         h = self.encoder(x)
+        print(f"autoencoder.py, h = {h.shape}")
         moments = self.quant_conv(h)
+        print(f"autoencoder.py , moments = {moments.shape}")
         posterior = DiagonalGaussianDistribution(moments)
         return posterior
 

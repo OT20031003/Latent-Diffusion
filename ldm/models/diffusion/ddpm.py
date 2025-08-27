@@ -502,6 +502,7 @@ class LatentDiffusion(DDPM):
     def instantiate_first_stage(self, config):
         model = instantiate_from_config(config)
         self.first_stage_model = model.eval()
+        print(f"ddpm.py instantiate_first_stage = {self.first_stage_model}")
         self.first_stage_model.train = disabled_train
         for param in self.first_stage_model.parameters():
             param.requires_grad = False
@@ -825,7 +826,7 @@ class LatentDiffusion(DDPM):
 
     @torch.no_grad()
     def encode_first_stage(self, x):
-        #print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute = {hasattr(self, "split_input_params")}")
+        print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute = {hasattr(self, "split_input_params")}")
         if hasattr(self, "split_input_params"):
             print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute")
             if self.split_input_params["patch_distributed_vq"]:
@@ -864,7 +865,7 @@ class LatentDiffusion(DDPM):
             else:
                 return self.first_stage_model.encode(x)
         else:
-            print(f"ldm.models.diffusion.ddpm.py, first_stage_model")
+            print(f"ldm.models.diffusion.ddpm.py, first_stage_model = {self.first_stage_model}")
             return self.first_stage_model.encode(x)
 
     def shared_step(self, batch, **kwargs):
