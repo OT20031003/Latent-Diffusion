@@ -1,9 +1,7 @@
 # Latent Diffusion Models
 [arXiv](https://arxiv.org/abs/2112.10752) | [BibTeX](#bibtex)
 
-<p align="center">
-<img src=assets/results.gif />
-</p>
+
 
 
 
@@ -16,8 +14,9 @@ A suitable [conda](https://conda.io/) environment named `ldm` can be created
 and activated with:
 
 ```
-conda env create -f environment.yaml
+conda create --name ldm python=3.9
 conda activate ldm
+pip install -r requirement.txt
 ```
 
 
