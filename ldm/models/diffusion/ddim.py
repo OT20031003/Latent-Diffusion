@@ -199,20 +199,20 @@ class DDIMSampler(object):
                     print(f"Warning: Got {conditioning.shape[0]} conditionings but batch-size is {batch_size}")
 
         self.make_schedule(ddim_num_steps=S, ddim_eta=eta, verbose=verbose)
-        print(f"ddim.py alphas_cumprod = {self.alphas_cumprod}")
+        print(f"ddim.py alphas_cumprod = {self.alphas_cumprod.shape}")
         C, H, W = shape
         size = (batch_size, C, H, W)
 
         device = self.model.betas.device
         alpha_bar_u = 1/(1 + noise_sigma**2)
-        print(f"alpha_bar_u = {alpha_bar_u}")
+        print(f"ddim.py, alpha_bar_u = {alpha_bar_u}")
         alpha_minus = -self.alphas_cumprod
         start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)
         torch.clamp(start_timesteps, 0, S)
         
         # alphas
         #indiceからタイムステップ
-        print(f"start_timesteps = {start_timesteps}")
+        print(f"ddim.py start_timesteps = {start_timesteps}")
         results = []
         img = x_T.to(device)
         maxind = start_timesteps.max().item()

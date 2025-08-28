@@ -35,10 +35,10 @@ The image you want to send should be put on "input_img" directory.
 python scripts/img2img.py
 ```
 
-### send image
+### Sent image
 ![original image](./outputs/uinput.png)
 
-### latent space
+### Latent space
 The input image compressed by AutoEncoder.
 
 ![latent image](./outputs/z.png)
@@ -46,7 +46,7 @@ The input image compressed by AutoEncoder.
 The latent image was transmitted with noise.(SNR = 3 dB)
 
 ![latent image with noise](./outputs/z_3.png)
-
+### Received image
 The image without noise sampling.
 
 ![image with no sampling](./outputs/nosample_3.png)

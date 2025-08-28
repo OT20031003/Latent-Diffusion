@@ -246,7 +246,7 @@ if __name__ == "__main__":
     
         print(f"d = {samples.shape}")
         recoverd_img = model.decode_first_stage(samples)
-        print(f"LPIPS = {recoverd_img, img}")
+        #print(f"LPIPS = {caluc_lpips(recoverd_img, img.to(device))}")
         print(f"recoverd_img = {recoverd_img.shape}")
         save_img(recoverd_img, f"outputs/output_{snr}.png")
         
