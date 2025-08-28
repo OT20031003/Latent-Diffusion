@@ -826,7 +826,7 @@ class LatentDiffusion(DDPM):
 
     @torch.no_grad()
     def encode_first_stage(self, x):
-        print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute = {hasattr(self, "split_input_params")}")
+        #print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute = {hasattr(self, "split_input_params")}")
         if hasattr(self, "split_input_params"):
             print(f"ldm.models.diffusion.ddpm.py, encode_first_stage hasattribute")
             if self.split_input_params["patch_distributed_vq"]:
