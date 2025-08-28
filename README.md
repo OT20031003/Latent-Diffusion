@@ -43,16 +43,17 @@ The input image compressed by AutoEncoder.
 
 ![latent image](./outputs/z.png)
 
-The latent image was transmitted with noise.(SNR = 4 dB)
+The latent image was transmitted with noise.(SNR = 3 dB)
 
-![latent image with noise](./outputs/z_4.png)
+![latent image with noise](./outputs/z_3.png)
 
 The image without noise sampling.
 
-![image with no sampling](./outputs/nosample_4.png)
+![image with no sampling](./outputs/nosample_3.png)
+
 The image with noise sampling.
 
-![image with sampling](./outputs/output_4.png)
+![image with sampling](./outputs/output_3.png)
 
 
 
