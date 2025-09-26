@@ -1,3 +1,4 @@
 *.ckpt
 password.txt
 no_inputs
+leftImg8bit_trainvaltest

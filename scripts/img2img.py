@@ -88,6 +88,38 @@ def save_img(img, path):
     vutil.save_image(img, path, nrow=4)
     print(f"images are saved in {path}")
 
+def save_img_individually(img, path):
+    """
+    バッチ画像を個別のファイルとして1枚ずつ保存する関数。
+
+    Args:
+        img (torch.Tensor): 保存する画像のテンソル (B, C, H, W) or (C, H, W)
+        path (str): 保存先のパス。例: "output/result.png"
+    """
+    # 3次元テンソル [C, H, W] の場合は、バッチ次元 [B] を追加して4次元に統一
+    if len(img.shape) == 3:
+        img = img.unsqueeze(0)
+
+    # 保存先ディレクトリ、ベースとなるファイル名、拡張子を取得
+    # 例: path="output/result.png" -> dirname="output", basename="result", ext=".png"
+    dirname = os.path.dirname(path)
+    basename = os.path.splitext(os.path.basename(path))[0]
+    ext = os.path.splitext(path)[1]
+
+    # 保存先ディレクトリが存在しない場合は作成
+    os.makedirs(dirname, exist_ok=True)
+
+    # バッチ内の画像を1枚ずつループして保存
+    batch_size = img.shape[0]
+    for i in range(batch_size):
+        # 連番付きの新しいファイルパスを生成
+        # 例: "output/result_0.png", "output/result_1.png", ...
+        individual_path = os.path.join(dirname, f"{basename}_{i}{ext}")
+        
+        # i番目の画像テンソルを取得して保存
+        vutil.save_image(img[i], individual_path)
+
+    print(f"{batch_size} images are saved in {dirname}/")
 
 def remove_png(path):
     png_files = glob.glob(f'{path}/*.png')
@@ -120,6 +152,14 @@ if __name__ == "__main__":
         nargs="?",
         help="dir to write results to",
         default="outputs/txt2img-samples"
+    )
+
+    parser.add_argument(
+        "--sentimgdir",
+        type=str, 
+        nargs='?',
+        help="sent img dir path",
+        default="./sentimg"
     )
     parser.add_argument(
         "--ddim_steps",
@@ -197,6 +237,7 @@ if __name__ == "__main__":
         sampler = DDIMSampler(model)
 
     os.makedirs(opt.outdir, exist_ok=True)
+    os.makedirs(opt.sentimgdir, exist_ok=True)
     outpath = opt.outdir
 
     prompt = opt.prompt
@@ -208,11 +249,11 @@ if __name__ == "__main__":
 
     all_samples=list()
     # 画像をロード
-    remove_png('outputs')
+    remove_png(opt.outdir)
     
     img = load_images_as_tensors(opt.input_path)
     print(f"img shape = {img.shape}")
-    save_img(img, "outputs/uinput.png")
+    save_img_individually(img, opt.sentimgdir + "/sentimg.png")
     img = img.to(device="cuda")
     z = model.encode_first_stage(img)
     # detachはVAEの重みを固定するため
@@ -222,7 +263,7 @@ if __name__ == "__main__":
     z_variances = torch.var(z, dim=(1, 2, 3))
     save_img(z, "outputs/z.png")
     z_copy = z
-    for snr in range(0, 5, 1):
+    for snr in range(0, 10, 1):
         # SNR 15dBのときのノイズを乗せる
         z = z_copy
         snrp = pow(10, snr/10)
@@ -230,9 +271,9 @@ if __name__ == "__main__":
         
         noise = torch.randn(z.shape).to("cuda") * torch.sqrt(torch.tensor(noise_variances).view(-1, 1, 1, 1).to("cuda")).to("cuda")
         z = z + noise
-        save_img(z, f"outputs/z_{snr}.png")
+        #save_img(z, f"outputs/z_{snr}.png")
         recoverd_img_no_samp = model.decode_first_stage(z)
-        save_img(recoverd_img_no_samp, f"outputs/nosample_{snr}.png")  
+        #save_img(recoverd_img_no_samp, f"outputs/nosample_{snr}.png")  
         cond = model.get_learned_conditioning(z.shape[0] * [""])
         print(f"####cond finisihed #####")
         # samples, intermediates = sampler.sample(S=opt.ddim_steps, batch_size=z.shape[0], 
@@ -248,7 +289,7 @@ if __name__ == "__main__":
         recoverd_img = model.decode_first_stage(samples)
         #print(f"LPIPS = {caluc_lpips(recoverd_img, img.to(device))}")
         print(f"recoverd_img = {recoverd_img.shape}")
-        save_img(recoverd_img, f"outputs/output_{snr}.png")
+        save_img_individually(recoverd_img, f"{opt.outdir}/output_{snr}.png")
         
     
 
