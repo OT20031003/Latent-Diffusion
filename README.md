@@ -55,6 +55,10 @@ The image with noise sampling.
 
 ![image with sampling](./outputs/output_3_0.png)
 
+## Result
+![Result](./snr_vs_ssim.png)
+
+
 
 
 
