@@ -12,7 +12,7 @@ source_dir = './leftImg8bit_trainvaltest/leftImg8bit'
 dest_dir = 'input_img'
 shutil.rmtree(dest_dir)
 # 3. Number of images to copy
-num_files_to_copy = 10
+num_files_to_copy = 20
 # --- End of Configuration ---
 
 # Create the destination folder if it does not exist
