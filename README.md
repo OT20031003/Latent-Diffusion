@@ -36,7 +36,7 @@ python -m scripts.img2img
 ```
 
 ### Sent image
-![original image](./outputs/uinput.png)
+![original image](./sentimg/sentimg_0.png)
 
 ### Latent space
 The input image compressed by AutoEncoder.
@@ -53,7 +53,7 @@ The image without noise sampling.
 
 The image with noise sampling.
 
-![image with sampling](./outputs/output_3.png)
+![image with sampling](./outputs/output_3_0.png)
 
 
 
