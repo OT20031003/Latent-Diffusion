@@ -5,7 +5,7 @@ def MSE(x, y):
     return ((x - y) ** 2).mean()
 
 def ssim_crite(x, y):
-    return ssim(x, y)
+    return ssim(x, y, channel_axis=-1)
 def main():
     cwd = os.getcwd()
     print("Current working directory:", cwd)
@@ -42,8 +42,8 @@ def main():
                 from PIL import Image
                 import numpy as np
                 
-                sentimg = np.array(Image.open(os.path.join(path1, sp)).convert('L').resize((256, 256)))
-                recimg = np.array(Image.open(os.path.join(path2, rp)).convert('L').resize((256, 256)))
+                sentimg = np.array(Image.open(os.path.join(path1, sp)).convert('RGB').resize((256, 256)))
+                recimg = np.array(Image.open(os.path.join(path2, rp)).convert('RGB').resize((256, 256)))
                 mse = ssim_crite(sentimg, recimg) # 評価指標
                 dic_sum[snr] = dic_sum.get(snr, 0) + mse
                 dic_num[snr] = dic_num.get(snr, 0) + 1

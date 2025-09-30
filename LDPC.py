@@ -11,7 +11,7 @@ pathr = "./outputs/LDPC" # 受信画像dirのpath
     1列あたりの1の数: d_v
     """
 # --- パラメータ設定 ---
-BLOCK_SIZE = 4096
+BLOCK_SIZE = 1024
 CODE_RATE = 0.5 # 符号率
 d_v, d_c = 2, 4 # LDPCのパラメータ
 
