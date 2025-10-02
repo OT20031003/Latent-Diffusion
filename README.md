@@ -61,7 +61,7 @@ The image by LDPC .
 
 ## Result
 ![Result](./snr_vs_ssim.png)
-
+![Result](./snr_vs_ssim_LDPC.png)
 
 
 

@@ -74,7 +74,7 @@ def main():
     plt.plot(x, y, marker='o')
     plt.xlabel("SNR (dB)")
     plt.ylabel("Average SSIM")
-    plt.title("SNR vs Average SSIM")
+    plt.title("SNR vs Average SSIM (LDPC)")
     plt.savefig("snr_vs_ssim_LDPC.png")
     plt.show()
     
