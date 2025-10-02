@@ -43,7 +43,7 @@ The input image compressed by AutoEncoder.
 
 ![latent image](./outputs/z.png)
 
-The latent image was transmitted with noise.(SNR = 3 dB)
+The latent image was transmitted with noise.(SNR = 0 dB)
 
 ![latent image with noise](./outputs/z_3.png)
 ### Received image
@@ -53,7 +53,11 @@ The image without noise sampling.
 
 The image with noise sampling.
 
-![image with sampling](./outputs/output_3_0.png)
+![image with sampling](./outputs/txt2img-samples/output_0_1.png)
+
+The image by LDPC .
+
+![image with LDPC](./outputs/LDPC/output_0_1.png)
 
 ## Result
 ![Result](./snr_vs_ssim.png)

@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 from pyldpc import make_ldpc, encode, decode
-import os
+import os, time
 
 path = "./sentimg" # 送信画像dirのpath
 pathr = "./outputs/LDPC" # 受信画像dirのpath
@@ -30,7 +30,8 @@ except Exception as e:
 k_actual = G.shape[1]        # G の行数を"情報長"として使う
 n_actual = G.shape[0]
 print(f"Actual k = {k_actual}, n = {n_actual}")
-
+dic_time = {}
+dic_num = {}
 for d in os.listdir(path):
     image = Image.open(os.path.join(path, d)).resize((256, 256))
     image_id = ""
@@ -53,11 +54,14 @@ for d in os.listdir(path):
     print(f"Image {d} divided into {blocks.shape[0]} blocks of size {k} bits.")
     
     
-    for snr in range(0, 20, 1):
+    for snr in range(0, 10, 1):
         decoded_blocks = []
         print(f"SNR = {snr} dB")
+        start_time = time.time()
         for i, block in enumerate(blocks):
-            print(f"Encoding block {i+1}/{blocks.shape[0]}")
+            if (i+1) % 100 == 0:
+                print(f"Encoding block {i+1}/{blocks.shape[0]}")
+            
             encoded_block = encode(G, block, snr)
             decoded_block = decode(H, encoded_block, snr, maxiter=100)
             
@@ -68,6 +72,13 @@ for d in os.listdir(path):
         decoded_binary_image = decoded_binary_image[:original_bits_len]
         reconstructed_image_data = np.packbits(decoded_binary_image).reshape(original_shape)
         reconstructed_image = Image.fromarray(reconstructed_image_data.astype(np.uint8))
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        dic_time[snr] = dic_time.get(snr, 0) + elapsed_time
+        dic_num[snr] = dic_num.get(snr, 0) + 1
+        print(f"execute time = {elapsed_time}")
         reconstructed_image.save(os.path.join(pathr, f"output_{snr}_{image_id}.png"))
-        
+
+for k, v in dic_time.items():
+    print(f"SNR = {k}, Average Execute Time = {v/dic_num[k]}")
             

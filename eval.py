@@ -10,7 +10,7 @@ def main():
     cwd = os.getcwd()
     print("Current working directory:", cwd)
     path1 = "./sentimg" # 送信画像dirのpath
-    path2 = "./outputs/txt2img-samples" # 受信画像dirのpath
+    path2 = "./outputs/LDPC" # 受信画像dirのpath
     dic_sum = {} #{snr : crite sum}
     dic_num = {} #{snr : num}
     for sp in os.listdir(path1):
@@ -75,7 +75,7 @@ def main():
     plt.xlabel("SNR (dB)")
     plt.ylabel("Average SSIM")
     plt.title("SNR vs Average SSIM")
-    plt.savefig("snr_vs_ssim.png")
+    plt.savefig("snr_vs_ssim_LDPC.png")
     plt.show()
     
     
