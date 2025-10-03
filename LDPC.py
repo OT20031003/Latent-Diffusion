@@ -54,7 +54,7 @@ for d in os.listdir(path):
     print(f"Image {d} divided into {blocks.shape[0]} blocks of size {k} bits.")
     
     
-    for snr in range(0, 10, 1):
+    for snr in range(-10,20, 1):
         decoded_blocks = []
         print(f"SNR = {snr} dB")
         start_time = time.time()

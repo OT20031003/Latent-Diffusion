@@ -19,6 +19,7 @@ from ldm.util import instantiate_from_config
 
 
 def make_beta_schedule(schedule, n_timestep, linear_start=1e-4, linear_end=2e-2, cosine_s=8e-3):
+    print(f"ldm.modules/diffusionmodules/util.py ; make_schedule = {schedule}" )
     if schedule == "linear":
         betas = (
                 torch.linspace(linear_start ** 0.5, linear_end ** 0.5, n_timestep, dtype=torch.float64) ** 2
@@ -55,7 +56,7 @@ def make_ddim_timesteps(ddim_discr_method, num_ddim_timesteps, num_ddpm_timestep
     # assert ddim_timesteps.shape[0] == num_ddim_timesteps
     # add one to get the final alpha values right (the ones from first scale to data during sampling)
     steps_out = ddim_timesteps + 1
-    print(f'ldm/modules/diffusionmodules/util.py, make_ddim_timsteps')
+    print(f'ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = {ddim_discr_method}')
     if verbose:
         print(f'ldm/modules/diffusionmodules/util.py, make_ddim_timsteps, Selected timesteps for ddim sampler: {steps_out.shape}')
     return steps_out

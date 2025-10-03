@@ -502,7 +502,7 @@ class LatentDiffusion(DDPM):
     def instantiate_first_stage(self, config):
         model = instantiate_from_config(config)
         self.first_stage_model = model.eval()
-        print(f"ddpm.py instantiate_first_stage = {self.first_stage_model}")
+        #print(f"ddpm.py instantiate_first_stage = {self.first_stage_model}")
         self.first_stage_model.train = disabled_train
         for param in self.first_stage_model.parameters():
             param.requires_grad = False
@@ -865,7 +865,7 @@ class LatentDiffusion(DDPM):
             else:
                 return self.first_stage_model.encode(x)
         else:
-            print(f"ldm.models.diffusion.ddpm.py, first_stage_model = {self.first_stage_model}")
+            #print(f"ldm.models.diffusion.ddpm.py, first_stage_model = {self.first_stage_model}")
             return self.first_stage_model.encode(x)
 
     def shared_step(self, batch, **kwargs):

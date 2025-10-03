@@ -164,7 +164,7 @@ class DDIMSampler(object):
     
     @torch.no_grad
     def my_ddim_sampling(self,
-               S, #ddim_num_steps
+               S, #ddim_num_steps 200
                batch_size,
                shape,
                noise_sigma,
@@ -199,7 +199,7 @@ class DDIMSampler(object):
                     print(f"Warning: Got {conditioning.shape[0]} conditionings but batch-size is {batch_size}")
 
         self.make_schedule(ddim_num_steps=S, ddim_eta=eta, verbose=verbose)
-        print(f"ddim.py alphas_cumprod = {self.alphas_cumprod.shape}")
+        print(f"ddim.py alphas_cumprod = {self.alphas_cumprod.shape}") #1000
         C, H, W = shape
         size = (batch_size, C, H, W)
 
@@ -208,11 +208,12 @@ class DDIMSampler(object):
         print(f"ddim.py, alpha_bar_u = {alpha_bar_u}")
         alpha_minus = -self.alphas_cumprod
         start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)
+        start_timesteps *= 2 # ここでタイムステップをいじくる
         torch.clamp(start_timesteps, 0, S)
         
         # alphas
         #indiceからタイムステップ
-        print(f"ddim.py start_timesteps = {start_timesteps}")
+        print(f"ddim.py start_timesteps after clamp S = {S} : {start_timesteps}")
         results = []
         img = x_T.to(device)
         maxind = start_timesteps.max().item()
