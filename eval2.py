@@ -118,13 +118,13 @@ def main():
     if snr_ldpc:
         plt.plot(snr_ldpc, ssim_ldpc, marker='o', linestyle='-', label='LDPC ')
     if snr_new:
-        plt.plot(snr_new, ssim_new, marker='x', linestyle='--', label='Diffusion SemCom')
+        plt.plot(snr_new, ssim_new, marker='s', linestyle='-', label='Diffusion SemCom')
 
     plt.xlabel("SNR (dB)", fontsize=12)
     plt.ylabel("Average SSIM", fontsize=12)
     plt.title("SNR vs. Average SSIM Comparison", fontsize=14)
     plt.legend() # 凡例を表示
-    plt.grid(True) # グリッド線を表示
+    plt.grid(False) # グリッド線を表示
     
     output_filename = "snr_vs_ssim_comparison.png"
     plt.savefig(output_filename)
