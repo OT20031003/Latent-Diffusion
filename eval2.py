@@ -126,7 +126,7 @@ def main():
     plt.legend() # 凡例を表示
     plt.grid(False) # グリッド線を表示
     
-    output_filename = "snr_vs_ssim_comparison.png"
+    output_filename = "snr_vs_ssim_comparison_1.png"
     plt.savefig(output_filename)
     
     print(f"\nグラフが '{output_filename}' として保存されました。")
