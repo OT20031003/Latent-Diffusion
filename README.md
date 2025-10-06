@@ -41,16 +41,7 @@ python -m scripts.img2img
 ### Latent space
 The input image compressed by AutoEncoder.
 
-![latent image](./outputs/z.png)
-
-The latent image was transmitted with noise.(SNR = 0 dB)
-
-![latent image with noise](./outputs/z_3.png)
-### Received image
-The image without noise sampling.
-
-![image with no sampling](./outputs/nosample_3.png)
-
+### Received Image
 The image with noise sampling.
 
 ![image with sampling](./outputs/txt2img-samples/output_0_1.png)
