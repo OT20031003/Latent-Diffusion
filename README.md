@@ -42,7 +42,7 @@ python -m scripts.img2img
 ```
 
 ### Sent image
-![original image](./sentimg/sentimg_0.png)
+![original image](./sentimg/sentimg_1.png)
 
 ### Latent space
 The input image compressed by AutoEncoder.
