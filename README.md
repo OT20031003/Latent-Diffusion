@@ -32,6 +32,12 @@ python scripts/txt2img.py --prompt "a virus monster is playing guitar, oil on ca
 ## Semantic Communication with Diffusion Model
 The image you want to send should be put on "input_img" directory.
 ```
+rm -r sentimg
+```
+```
+rm -r outputs/txt2img-samples
+```
+```
 python -m scripts.img2img
 ```
 

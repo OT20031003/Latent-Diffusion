@@ -204,7 +204,7 @@ class DDIMSampler(object):
         size = (batch_size, C, H, W)
 
         device = self.model.betas.device
-        alpha_bar_u = 1/(1 + noise_sigma**2)
+        alpha_bar_u = 1/(1 + noise_sigma)
         print(f"ddim.py, alpha_bar_u = {alpha_bar_u}")
         alpha_minus = -self.alphas_cumprod
         start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)

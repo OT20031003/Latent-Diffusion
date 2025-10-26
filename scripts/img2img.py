@@ -267,9 +267,11 @@ if __name__ == "__main__":
         # SNR 15dBのときのノイズを乗せる
         print(f"--------SNR = {snr}-----------")
         z = z_copy
-        snrp = pow(10, snr/10)
-        noise_variances = z_variances/snrp
-        
+        snrp = pow(10, snr/10) 
+        noise_variances = z_variances/snrp # ノイズ分散 正解の分散
+        k = 2.0
+        noise_variances_predict = noise_variances * (1 + 1/k) # 誤差付きの予測値
+        print(f"noise_variace = {noise_variances}")
         noise = torch.randn(z.shape).to("cuda") * torch.sqrt(torch.tensor(noise_variances).view(-1, 1, 1, 1).to("cuda")).to("cuda")
         z = z + noise
         #save_img(z, f"outputs/z_{snr}.png")
