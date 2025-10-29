@@ -1,14 +1,5 @@
-# Latent Diffusion Models
-[arXiv](https://arxiv.org/abs/2112.10752) | [BibTeX](#bibtex)
+# Denoising System by Latent Diffusion Model
 
-
-
-
-
-
-
-
-  
 ## Requirements
 A suitable [conda](https://conda.io/) environment named `ldm` can be created
 and activated with:
