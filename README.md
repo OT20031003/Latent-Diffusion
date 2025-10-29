@@ -48,7 +48,7 @@ python -m scripts.img2img
 The input image compressed by AutoEncoder.
 
 ### Received Image
-The image with noise sampling.
+The image with noise sampling. (channel noise = 0 dB)
 
 ![image with sampling](./outputs/txt2img-samples/output_0_1.png)
 
