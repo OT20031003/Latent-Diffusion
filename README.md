@@ -41,7 +41,7 @@ The input image compressed by AutoEncoder.
 ### Received Image
 The image with noise sampling. (channel noise = 0 dB)
 
-![image with sampling](./outputs/txt2img-samples/output_0_1.png)
+![image with sampling](./outputs/correct/Diffusion%20Denoising/output_0_1.png)
 
 The image by LDPC .
 
