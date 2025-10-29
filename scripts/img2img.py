@@ -269,7 +269,7 @@ if __name__ == "__main__":
         z = z_copy
         snrp = pow(10, snr/10) 
         noise_variances = z_variances/snrp # ノイズ分散 正解の分散
-        k = 2.0
+        k = 5 # k > 0のときより多くのサンプリングを行う
         noise_variances_predict = noise_variances * (1 + 1/k) # 誤差付きの予測値
         print(f"noise_variace = {noise_variances}")
         noise = torch.randn(z.shape).to("cuda") * torch.sqrt(torch.tensor(noise_variances).view(-1, 1, 1, 1).to("cuda")).to("cuda")
@@ -283,7 +283,7 @@ if __name__ == "__main__":
         #                 shape= z.shape[1:4],  x_T=z,
         #                 conditioning=cond)
         samples = sampler.my_ddim_sampling(S=opt.ddim_steps, batch_size=z.shape[0], 
-                        shape= z.shape[1:4],   noise_sigma=noise_variances,x_T=z,
+                        shape= z.shape[1:4],   noise_sigma=noise_variances,x_T=z,noise_sigma_predict = noise_variances_predict,
                         conditioning=cond)
         
         

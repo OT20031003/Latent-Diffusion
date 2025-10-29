@@ -168,6 +168,7 @@ class DDIMSampler(object):
                batch_size,
                shape,
                noise_sigma,
+               noise_sigma_predict,
                conditioning=None,
                callback=None,
                normals_sequence=None,
@@ -204,12 +205,12 @@ class DDIMSampler(object):
         size = (batch_size, C, H, W)
 
         device = self.model.betas.device
-        alpha_bar_u = 1/(1 + noise_sigma)
+        alpha_bar_u = 1/(1 + noise_sigma_predict)
         print(f"ddim.py, alpha_bar_u = {alpha_bar_u}")
         alpha_minus = -self.alphas_cumprod
         start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)
-        start_timesteps *= 1 # ここでタイムステップをいじくる
-        torch.clamp(start_timesteps, 0, S)
+        start_timesteps *= 2 # ここでタイムステップをいじくる
+        #torch.clamp(start_timesteps, 0, S)
         
         # alphas
         #indiceからタイムステップ

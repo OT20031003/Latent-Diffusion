@@ -57,7 +57,9 @@ The image by LDPC .
 ![image with LDPC](./outputs/LDPC/output_0_1.png)
 
 ## Result
-![Result](./snr_vs_ssim.png)
+![Result on LDPC](./snr_vs_lpips_comparison.png)
+![Result on LDPC](./snr_vs_ssim_comparison.png)
+
 
 
 

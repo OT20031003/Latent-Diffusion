@@ -5,6 +5,11 @@ import os, time
 
 path = "./sentimg" # 送信画像dirのpath
 pathr = "./outputs/LDPC" # 受信画像dirのpath
+
+# --- 修正点 1: 保存先ディレクトリを自動で作成 ---
+os.makedirs(pathr, exist_ok=True)
+# -----------------------------------------
+
 """
     列の数: n
     行の数: m = n * d_v / d_c
@@ -27,17 +32,40 @@ except Exception as e:
     print(f"Error creating LDPC matrix: {e}")
     exit()
 
-k_actual = G.shape[1]        # G の行数を"情報長"として使う
-n_actual = G.shape[0]
+k_actual = G.shape[1]        # G の列数 (pyldpcのsparse Gは n x k)
+n_actual = G.shape[0]        # G の行数
 print(f"Actual k = {k_actual}, n = {n_actual}")
 dic_time = {}
 dic_num = {}
-for d in os.listdir(path):
-    image = Image.open(os.path.join(path, d)).resize((256, 256))
+
+# --- 修正点 2: ファイルリストをソートする ---
+try:
+    file_list = sorted(os.listdir(path))
+except FileNotFoundError:
+    print(f"Error: Input directory not found at {path}")
+    exit()
+
+for d in file_list:
+    # 画像ファイル以外をスキップ (念のため)
+    if not (d.endswith('.png') or d.endswith('.jpg') or d.endswith('.jpeg')):
+        print(f"Skipping non-image file: {d}")
+        continue
+    
+    try:
+        image = Image.open(os.path.join(path, d)).resize((256, 256))
+    except Exception as e:
+        print(f"Error opening image {d}: {e}")
+        continue # このファイルをスキップ
+        
     image_id = ""
     for i in range(len(d)):
         if d[i].isdigit():
             image_id += d[i]
+    
+    if not image_id:
+        print(f"Skipping file {d}: No digits found in filename.")
+        continue
+
     print("Processing image ID:", image_id)
     image_data = np.array(image)
     original_shape = image_data.shape
@@ -51,10 +79,12 @@ for d in os.listdir(path):
         padded_binary_image = binary_image
     
     blocks = padded_binary_image.reshape(-1, k_actual)
-    print(f"Image {d} divided into {blocks.shape[0]} blocks of size {k} bits.")
+    
+    # --- 修正点 3: ログのkをk_actualに修正 (任意) ---
+    print(f"Image {d} divided into {blocks.shape[0]} blocks of size {k_actual} bits.")
     
     
-    for snr in range(10,11, 1):
+    for snr in range(-10,20, 1):
         decoded_blocks = []
         print(f"SNR = {snr} dB")
         start_time = time.time()
@@ -81,4 +111,3 @@ for d in os.listdir(path):
 
 for k, v in dic_time.items():
     print(f"SNR = {k}, Average Execute Time = {v/dic_num[k]}")
-            
