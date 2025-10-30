@@ -184,8 +184,8 @@ def plot_results(results, title_suffix="", output_filename="snr_vs_metric.png"):
 def main():
     parser = argparse.ArgumentParser(description="SNR vs SSIM/MSE/PSNR/LPIPS comparison script")
     parser.add_argument("--sent", "-s", default="./sentimg", help="Directory for 'sent' (original) images")
-    parser.add_argument("--recv", "-r", default="./outputs/correct/Diffusion Denoising", help="Directory for 'received' images (comparison target 1)")
-    parser.add_argument("--recv2", "-r2", default="./outputs/LDPC", help="Directory for 'received' images (comparison target 2, optional)")
+    parser.add_argument("--recv", "-r", default="./outputs/predict_noise/k=0.0", help="Directory for 'received' images (comparison target 1)")
+    parser.add_argument("--recv2", "-r2", default="./outputs/predict_noise/rk=0.0", help="Directory for 'received' images (comparison target 2, optional)")
     # --- Updated metric choices ---
     parser.add_argument("--metric", "-m", choices=["ssim","mse","psnr","lpips","all"], default="ssim", help="Metric to use (ssim, mse, psnr, lpips, or all)")
     parser.add_argument("--resize", type=int, nargs=2, metavar=('W','H'), default=(256,256), help="Resize dimensions for comparison (W H)")

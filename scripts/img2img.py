@@ -151,7 +151,7 @@ if __name__ == "__main__":
         type=str,
         nargs="?",
         help="dir to write results to",
-        default="outputs/txt2img-samples"
+        default="outputs/predict_noise/k=-0.7"
     )
 
     parser.add_argument(
@@ -261,17 +261,20 @@ if __name__ == "__main__":
     z = model.get_first_stage_encoding(z).detach()
     print(f"z = {z.shape}, z_max = {z.max()}, z_min = {z.min()}")
     z_variances = torch.var(z, dim=(1, 2, 3))
+    print(f"z_variance = {z_variances}")
     save_img(z, "outputs/z.png")
     z_copy = z
     for snr in range(-10, 20, 1):
-        # SNR 15dBのときのノイズを乗せる
+        # SNR 15dBのときのノイズを乗せる snr = signal/noise
         print(f"--------SNR = {snr}-----------")
         z = z_copy
         snrp = pow(10, snr/10) 
         noise_variances = z_variances/snrp # ノイズ分散 正解の分散
-        k = 5 # k > 0のときより多くのサンプリングを行う
-        noise_variances_predict = noise_variances * (1 + 1/k) # 誤差付きの予測値
-        print(f"noise_variace = {noise_variances}")
+        scalar_variance = 1 / snrp # = Noise/Signal
+        noise_variances_normalize = torch.full_like(z_variances, scalar_variance) 
+        k = -0.7 # k < 0のときより多くのサンプリングを行う
+        noise_variances_predict = noise_variances_normalize / (1.0 + k) # 誤差付きの予測値
+        print(f"noise_variace = {noise_variances}, z_variance = {z_variances}")
         noise = torch.randn(z.shape).to("cuda") * torch.sqrt(torch.tensor(noise_variances).view(-1, 1, 1, 1).to("cuda")).to("cuda")
         z = z + noise
         #save_img(z, f"outputs/z_{snr}.png")
@@ -283,7 +286,7 @@ if __name__ == "__main__":
         #                 shape= z.shape[1:4],  x_T=z,
         #                 conditioning=cond)
         samples = sampler.my_ddim_sampling(S=opt.ddim_steps, batch_size=z.shape[0], 
-                        shape= z.shape[1:4],   noise_sigma=noise_variances,x_T=z,noise_sigma_predict = noise_variances_predict,
+                        shape= z.shape[1:4],   noise_sigma=noise_variances_normalize,x_T=z,noise_sigma_predict = noise_variances_predict,
                         conditioning=cond)
         
         

@@ -209,7 +209,7 @@ class DDIMSampler(object):
         print(f"ddim.py, alpha_bar_u = {alpha_bar_u}")
         alpha_minus = -self.alphas_cumprod
         start_timesteps = torch.searchsorted(alpha_minus, -alpha_bar_u)
-        start_timesteps *= 2 # ここでタイムステップをいじくる
+        start_timesteps *= 1 # ここでタイムステップをいじくる
         #torch.clamp(start_timesteps, 0, S)
         
         # alphas
