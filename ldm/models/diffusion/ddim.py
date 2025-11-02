@@ -4,9 +4,9 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from functools import partial
-
+import os
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like
-
+import torchvision.utils as vutil  # <-- この行を追加
 
 class DDIMSampler(object):
     def __init__(self, model, schedule="linear", **kwargs):
@@ -186,8 +186,10 @@ class DDIMSampler(object):
                log_every_t=100,
                unconditional_guidance_scale=1.,
                unconditional_conditioning=None,
-
+               intermediate_path = None, 
+               intermediate_skip = 1,
                # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
+               snr = None,
                **kwargs
                ):
         if conditioning is not None:
@@ -246,7 +248,38 @@ class DDIMSampler(object):
 
             # active_maskがTrueの画像だけを、計算結果で更新する
             img = torch.where(active_mask, img_prev, img)
+            #print(f"step = {step}, index = {index}")
+            
+            if intermediate_path != None and index % intermediate_skip == 0:
+                #TODO 途中結果を保存
+                
+                decoded_img = self.model.decode_first_stage(pred_x0)
+                
+                # VAEのデコーダ出力は [-1, 1] の範囲なので、[0, 1] にスケーリングする
+                # decoded_img = (decoded_img + 1.0) / 2.0
+                # decoded_img = torch.clamp(decoded_img, min=0.0, max=1.0)
 
+                # バッチ内の各画像を個別に保存
+                batch_size = decoded_img.shape[0]
+                for i in range(batch_size):
+                    # ファイル名をステップ番号と画像インデックスで一意に決定
+                    # 例: /path/to/intermediate/step_0180_img_00.png
+                    target_dir = os.path.join(intermediate_path, str(snr), str(i))
+                    
+                    # 2. ディレクトリが存在しなければ再帰的に作成 (exist_ok=True)
+                    os.makedirs(target_dir, exist_ok=True)
+                    
+                    # 3. ファイル名を決定 (ステップ番号)
+                    #    例: step_0436.png
+                    file_name = f"step_{step:04d}.png"
+                    
+                    # 4. 最終的なファイルパス
+                    img_path = os.path.join(target_dir, file_name)
+                    
+                    # torchvision.utils.save_image を使って保存
+                    vutil.save_image(decoded_img[i], img_path)
+                #print(f"save figure")
+                
 
             
                 

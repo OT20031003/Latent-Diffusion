@@ -137,7 +137,7 @@ def caluc_lpips(x,y):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
+    k = 0.0 # 誤差率
     parser.add_argument(
         "--prompt",
         type=str,
@@ -151,7 +151,14 @@ if __name__ == "__main__":
         type=str,
         nargs="?",
         help="dir to write results to",
-        default="outputs/predict_noise/k=-0.7"
+        default=f"outputs/ti/k={k}"
+    )
+    parser.add_argument(
+        "--nosample_outdir",
+        type=str,
+        nargs="?",
+        help="dir to write results to",
+        default=f"outputs/nosample/k={k}"
     )
 
     parser.add_argument(
@@ -221,8 +228,22 @@ if __name__ == "__main__":
         default="input_img",
         help="input image path"
     )
+    parser.add_argument(
+        "--intermediate_path",
+        type=str, 
+        default=f"./intermediate/k={k}",
+        help="intermediate path"
+    )
+    parser.add_argument(
+        "--intermediate_skip",
+        type=int, 
+        default=1,
+        help="intermediate path"
+    )
     opt = parser.parse_args()
-
+    if opt.intermediate_path != None:
+        os.makedirs(opt.intermediate_path, exist_ok=True)
+        print(f"{opt.intermediate_path} is created new")
 
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")  # TODO: Optionally download from same location as ckpt and chnage this logic
     # ldm.modules.diffusion.ddpmをロード
@@ -238,6 +259,7 @@ if __name__ == "__main__":
 
     os.makedirs(opt.outdir, exist_ok=True)
     os.makedirs(opt.sentimgdir, exist_ok=True)
+    os.makedirs(opt.nosample_outdir, exist_ok=True)
     outpath = opt.outdir
 
     prompt = opt.prompt
@@ -264,7 +286,7 @@ if __name__ == "__main__":
     print(f"z_variance = {z_variances}")
     save_img(z, "outputs/z.png")
     z_copy = z
-    for snr in range(-10, 20, 1):
+    for snr in range(-3, 5, 1):
         # SNR 15dBのときのノイズを乗せる snr = signal/noise
         print(f"--------SNR = {snr}-----------")
         z = z_copy
@@ -272,7 +294,7 @@ if __name__ == "__main__":
         noise_variances = z_variances/snrp # ノイズ分散 正解の分散
         scalar_variance = 1 / snrp # = Noise/Signal
         noise_variances_normalize = torch.full_like(z_variances, scalar_variance) 
-        k = -0.7 # k < 0のときより多くのサンプリングを行う
+         # k < 0のときより多くのサンプリングを行う
         noise_variances_predict = noise_variances_normalize / (1.0 + k) # 誤差付きの予測値
         print(f"noise_variace = {noise_variances}, z_variance = {z_variances}")
         noise = torch.randn(z.shape).to("cuda") * torch.sqrt(torch.tensor(noise_variances).view(-1, 1, 1, 1).to("cuda")).to("cuda")
@@ -287,7 +309,8 @@ if __name__ == "__main__":
         #                 conditioning=cond)
         samples = sampler.my_ddim_sampling(S=opt.ddim_steps, batch_size=z.shape[0], 
                         shape= z.shape[1:4],   noise_sigma=noise_variances_normalize,x_T=z,noise_sigma_predict = noise_variances_predict,
-                        conditioning=cond)
+                        conditioning=cond,intermediate_path=opt.intermediate_path, intermediate_skip=opt.intermediate_skip, snr = snr)
+    
         
         
     
@@ -296,6 +319,7 @@ if __name__ == "__main__":
         #print(f"LPIPS = {caluc_lpips(recoverd_img, img.to(device))}")
         print(f"recoverd_img = {recoverd_img.shape}")
         save_img_individually(recoverd_img, f"{opt.outdir}/output_{snr}.png")
+        save_img_individually(recoverd_img_no_samp, f"{opt.nosample_outdir}/output_{snr}.png")
         
     
 
